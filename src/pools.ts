@@ -4,6 +4,7 @@ import { TokenListProvider, TokenInfo, CDNTokenListResolutionStrategy } from "@s
 import Decimal from "decimal.js";
 import { WALLET_PRIVATE_KEY, SOLANA_RPC_ENDPOINT, Pool } from "./constants";
 import { isConstructorDeclaration } from "typescript";
+import { min } from "mathjs";
 
 export const getAMMPools = async () => {
     const AMMPools = new Map<string, Pool[]>();
@@ -22,6 +23,11 @@ export const getAMMPools = async () => {
 
         const tokenAAmount = poolInfo['tokenAAmount'];
         const tokenBAmount = poolInfo['tokenBAmount'];
+
+        // Not enough liquidity
+        if (min(tokenAAmount, tokenBAmount) < 1000) {
+            continue;
+        }
 
         const pool: Pool = {
             tokenA,
@@ -46,6 +52,11 @@ export const getAMMPools = async () => {
 
         const tokenAAmount = poolInfo['tokenAmountCoin'];
         const tokenBAmount = poolInfo['tokenAmountPc'];
+
+        // Not enough liquidity
+        if (min(tokenAAmount, tokenBAmount) < 1000) {
+            continue;
+        }
 
         const pool: Pool = {
             tokenA,

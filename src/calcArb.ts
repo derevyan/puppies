@@ -1,52 +1,36 @@
 import { Pool } from './constants';
-import { matrix } from 'mathjs';
+import { makePaths } from './makePaths';
+import { fast_path_two_arb, fast_path_three_arb } from './pathArb';
 
 export const calculateArbitrage = async (AMMPools: Map<string, Pool[]>) => {
-    const AMMTokens = [];
-    const allTokens = new Set();
+    const pools = await AMMPools;
+    const allPools = Array.from(pools.values()).flat();
+    const paths = makePaths(allPools);
 
-    for (const [AMM, pools] of AMMPools.entries()) {
-        const tokens = new Set();
-        for (const pool of pools) {
-            tokens.add(pool.tokenA);
-            tokens.add(pool.tokenB);
-
-            allTokens.add(pool.tokenA);
-            allTokens.add(pool.tokenB);
+    for (const path of paths) {
+        let amt_in, profit, between_lp_amts;
+        if (path.length == 2) {
+            [amt_in, profit, between_lp_amts] = fast_path_two_arb(
+                path[0].reserveIn,
+                path[0].reserveOut,
+                path[1].reserveIn,
+                path[1].reserveOut
+            );
+        } 
+        /*
+        else if (path.length == 3) {
+            [amt_in, profit, between_lp_amts] = fast_path_three_arb(
+                path[0].reserveIn,
+                path[0].reserveOut,
+                path[1].reserveIn,
+                path[1].reserveOut,
+                path[2].reserveIn,
+                path[2].reserveOut
+            );
         }
-
-        AMMTokens.push(tokens);
-    }
-
-    // Turn sets into lists (assigning each token an index within an AMM)
-    const AMMIndices = [];
-    for (const tokens of AMMTokens) {
-        AMMIndices.push(Array.from(tokens));
-    }
-
-    // Create a global list of tokens where each token's global index is their position in this list
-    const globalIndices = Array.from(allTokens);
-
-    // Create local indices of tokens for each AMM
-    const localIndices = [];
-    for (const AMM of AMMIndices) {
-        const localIndexMatrix = [];
-        for (const index in globalIndices) {
-            const row = [];
-            const token = globalIndices[index];
-            for (const localIndex in AMM) {
-                if (AMM[localIndex] == token) {
-                    row.push(1)
-                } else {
-                    row.push(0)
-                }
-            }
-
-            localIndexMatrix.push(row);
+        */
+        if(profit && profit > 0) {
+            console.log(`\n Profit of ${profit} USDC through path ${JSON.stringify(path)} with amount in ${amt_in} USDC`);
         }
-
-        localIndices.push(localIndexMatrix);
     }
-
-    console.log(JSON.stringify(localIndices));
 }
