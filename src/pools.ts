@@ -25,7 +25,7 @@ export const getAMMPools = async () => {
         const tokenBAmount = poolInfo['tokenBAmount'];
 
         // Not enough liquidity
-        if (min(tokenAAmount, tokenBAmount) < 1000) {
+        if (min(tokenAAmount, tokenBAmount) < 10000) {
             continue;
         }
 

@@ -18,6 +18,7 @@ import {
 import {getAMMPools} from './pools';
 import { calculateArbitrage } from "./calcArb";
 import { makePaths } from "./makePaths";
+import { getRoutes } from "./findBestRoute";
 
 const getPossiblePairsTokenInfo = ({
   tokens,
@@ -99,7 +100,7 @@ const main = async () => {
     // If you know which input/output pair you want
     const inputToken = tokens.find((t) => t.address == INPUT_MINT_ADDRESS); // USDC Mint Info
     const AMMPools = await getAMMPools();
-    calculateArbitrage(AMMPools);
+    const profitablePaths = calculateArbitrage(AMMPools);
 
 
     /*

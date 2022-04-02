@@ -17,7 +17,7 @@ import {
 // you are using your own RPC endpoint.
 const connection = new Connection(SOLANA_RPC_ENDPOINT);
 
-const getRoutes = async ({
+export const getRoutes = async ({
     jupiter,
     inputToken,
     outputToken,

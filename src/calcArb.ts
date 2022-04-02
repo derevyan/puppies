@@ -7,6 +7,8 @@ export const calculateArbitrage = async (AMMPools: Map<string, Pool[]>) => {
     const allPools = Array.from(pools.values()).flat();
     const paths = makePaths(allPools);
 
+    const profitPaths = [];
+
     for (const path of paths) {
         let amt_in, profit, between_lp_amts;
         if (path.length == 2) {
@@ -30,7 +32,9 @@ export const calculateArbitrage = async (AMMPools: Map<string, Pool[]>) => {
         }
         */
         if(profit && profit > 0) {
-            console.log(`\n Profit of ${profit} USDC through path ${JSON.stringify(path)} with amount in ${amt_in} USDC`);
-        }
+            profitPaths.push([path, profit, amt_in, between_lp_amts]);
+        } 
     }
+
+    return profitPaths;
 }
