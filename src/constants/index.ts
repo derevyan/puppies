@@ -1,7 +1,8 @@
-import { Cluster } from "@solana/web3.js";
-import bs58 from "bs58";
-import { Keypair } from "@solana/web3.js";
+import { Cluster, Keypair, PublicKey } from "@solana/web3.js";
 import './amms';
+import { u64 } from "@solana/spl-token";
+import {OrcaPoolToken} from "@orca-so/sdk";
+import * as Tokens from "@orca-so/sdk/dist/constants/tokens";
 
 require("dotenv").config();
 
@@ -36,7 +37,7 @@ export const OUTPUT_MINT_ADDRESS =
 
 
 // Tokens we use as input and output
-export const RESERVE_TOKENS = ['USDC'];
+export const RESERVE_TOKENS = [Tokens.usdcToken.mint.toString()];
 // Max amount of legs for our arb
 export const MAX_LENGTH_PATH = 3;
 
@@ -54,13 +55,13 @@ export interface Token {
 export interface Pool {
   tokenA: string;
   tokenB: string;
-  tokenAAmount: number;
-  tokenBAmount: number;
+  tokenAAmount: u64;
+  tokenBAmount: u64;
 }
 
 export interface PathStep {
   tokenIn: string;
   tokenOut: string;
-  reserveIn: number;
-  reserveOut: number;
+  reserveIn: u64;
+  reserveOut: u64;
 }

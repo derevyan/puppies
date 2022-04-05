@@ -24,6 +24,7 @@ export const makePaths = (pairs: Pool[]) => {
 
     for (const reserveToken of RESERVE_TOKENS) {
         const firstPairs = adjacencyList.get(reserveToken);
+
         if (!firstPairs) {
             continue;
         }
@@ -122,11 +123,12 @@ export const makePaths = (pairs: Pool[]) => {
             }
 
             const lastStep = path.at(-1);
-            if (!lastStep) {
+            const firstStep = path.at(0);
+            if (!lastStep ||  !firstStep) {
                 continue;
             }
 
-            if (RESERVE_TOKENS.indexOf(lastStep.tokenOut) != -1) {
+            if (RESERVE_TOKENS.indexOf(lastStep.tokenOut) != -1 && firstStep.tokenIn == lastStep.tokenOut) {
                 actualPaths.push(path);
             }
         }
