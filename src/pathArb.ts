@@ -1,4 +1,4 @@
-import { sqrt, max, BigNumber } from 'mathjs';
+import { sqrt, max, BigNumber, bignumber, BigNumberDependencies } from 'mathjs';
 
 const cp_amm_out = (R_in: number, R_out: number, d_in: number) => {
     return R_out - ((R_in * R_out) / (R_in + (0.997 * d_in)))

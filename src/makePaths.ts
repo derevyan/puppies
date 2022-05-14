@@ -1,4 +1,4 @@
-import {Pool, RESERVE_TOKENS, MAX_LENGTH_PATH, PathStep} from './constants';
+import { Pool, RESERVE_TOKENS, MAX_LENGTH_PATH, PathStep } from './constants';
 
 export const makePaths = (pairs: Pool[]) => {
     const adjacencyList = new Map<string, Set<Pool>>();
@@ -7,13 +7,13 @@ export const makePaths = (pairs: Pool[]) => {
         const tokenA = pair.tokenA;
         const tokenB = pair.tokenB;
 
-        if (adjacencyList.has(tokenA)){
+        if (adjacencyList.has(tokenA)) {
             adjacencyList.get(tokenA)?.add(pair);
         } else {
             adjacencyList.set(tokenA, new Set([pair]));
         }
 
-        if (adjacencyList.has(tokenB)){
+        if (adjacencyList.has(tokenB)) {
             adjacencyList.get(tokenB)?.add(pair);
         } else {
             adjacencyList.set(tokenB, new Set([pair]));
@@ -58,7 +58,7 @@ export const makePaths = (pairs: Pool[]) => {
         }
 
         paths.push(steps);
-        
+
         for (let i = 0; i < MAX_LENGTH_PATH - 1; i++) {
             const lastPaths: PathStep[][] | undefined = paths.at(-1);
             if (!lastPaths) {
@@ -83,26 +83,26 @@ export const makePaths = (pairs: Pool[]) => {
                 for (const pool of pools) {
                     const tokenA = pool.tokenA;
                     const tokenB = pool.tokenB;
-        
+
                     let tokenIn = tokenB;
                     let tokenOut = tokenA;
                     let reserveIn = pool.tokenBAmount;
                     let reserveOut = pool.tokenAAmount;
-        
+
                     if (step.tokenOut == tokenA) {
                         tokenIn = tokenA;
                         tokenOut = tokenB;
                         reserveIn = pool.tokenAAmount;
                         reserveOut = pool.tokenBAmount;
                     }
-        
+
                     const pathStep: PathStep = {
                         tokenIn,
                         tokenOut,
                         reserveIn,
                         reserveOut
                     }
-                    
+
                     const newPath = [...path];
                     newPath.push(pathStep);
                     newPaths.push(newPath);
@@ -124,7 +124,7 @@ export const makePaths = (pairs: Pool[]) => {
 
             const lastStep = path.at(-1);
             const firstStep = path.at(0);
-            if (!lastStep ||  !firstStep) {
+            if (!lastStep || !firstStep) {
                 continue;
             }
 

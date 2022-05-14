@@ -15,7 +15,7 @@ import {
   findBestRoute
 } from "./findBestRoute";
 
-import {getAMMPools} from './pools';
+import { getAMMPools } from './pools';
 import { calculateArbitrage } from "./calcArb";
 import { makePaths } from "./makePaths";
 import { getRoutes } from "./findBestRoute";
