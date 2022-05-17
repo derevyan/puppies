@@ -1,87 +1,19 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import fetch from "isomorphic-fetch";
 
 import { Jupiter, RouteInfo, TOKEN_LIST_URL } from "@jup-ag/core";
 import {
   ENV,
   INPUT_MINT_ADDRESS,
-  OUTPUT_MINT_ADDRESS,
   USER_KEYPAIR,
   SOLANA_RPC_ENDPOINT,
   Token,
-  AMOUNT,
 } from "./constants";
-import {
-  findBestRoute
-} from "./findBestRoute";
 
 import {getAMMPools} from './pools';
 import { calculateArbitrage } from "./calcArb";
-import { makePaths } from "./makePaths";
-import { getRoutes } from "./findBestRoute";
 
-const getPossiblePairsTokenInfo = ({
-  tokens,
-  routeMap,
-  inputToken,
-}: {
-  tokens: Token[];
-  routeMap: Map<string, string[]>;
-  inputToken?: Token;
-}) => {
-  try {
-    if (!inputToken) {
-      return {};
-    }
 
-    const possiblePairs = inputToken
-      ? routeMap.get(inputToken.address) || []
-      : []; // return an array of token mints that can be swapped with SOL
-    const possiblePairsTokenInfo: { [key: string]: Token | undefined } = {};
-    possiblePairs.forEach((address) => {
-      possiblePairsTokenInfo[address] = tokens.find((t) => {
-        return t.address == address;
-      });
-    });
-    // Perform your conditionals here to use other outputToken
-    // const alternativeOutputToken = possiblePairsTokenInfo[USDT_MINT_ADDRESS]
-    return possiblePairsTokenInfo;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const executeSwap = async ({
-  jupiter,
-  route,
-}: {
-  jupiter: Jupiter;
-  route: RouteInfo;
-}) => {
-  try {
-    // Prepare execute exchange
-    const { execute } = await jupiter.exchange({
-      route,
-    });
-
-    // Execute swap
-    const swapResult: any = await execute(); // Force any to ignore TS misidentifying SwapResult type
-
-    if (swapResult.error) {
-      console.log(swapResult.error);
-    } else {
-      console.log(`https://explorer.solana.com/tx/${swapResult.txid}`);
-      console.log(
-        `inputAddress=${swapResult.inputAddress.toString()} outputAddress=${swapResult.outputAddress.toString()}`
-      );
-      console.log(
-        `inputAmount=${swapResult.inputAmount} outputAmount=${swapResult.outputAmount}`
-      );
-    }
-  } catch (error) {
-    throw error;
-  }
-};
 
 
 const main = async () => {
@@ -90,17 +22,10 @@ const main = async () => {
     const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[ENV])).json(); // Fetch token list from Jupiter API
 
     //  Load Jupiter
-    const jupiter = await Jupiter.load({
-      connection,
-      cluster: ENV,
-      user: USER_KEYPAIR, // or public key
-    });
 
 
     // If you know which input/output pair you want
-    const inputToken = tokens.find((t) => t.address == INPUT_MINT_ADDRESS); // USDC Mint Info
     const AMMPools = await getAMMPools();
-    const profitablePaths = calculateArbitrage(AMMPools);
 
 
     /*
